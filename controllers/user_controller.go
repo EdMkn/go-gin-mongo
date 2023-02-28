@@ -37,10 +37,24 @@ func CreateUser() gin.HandlerFunc {
 		}
 
 		newUser := models.User{
-			Id:       primitive.NewObjectID(),
-			Name:     user.Name,
-			Location: user.Location,
-			Title:    user.Title,
+			Id:         primitive.NewObjectID(),
+			Password:   user.Password,
+			IsActive:   user.IsActive,
+			Balance:    user.Balance,
+			Age:        user.Age,
+			Name:       user.Name,
+			Gender:     user.Gender,
+			Company:    user.Company,
+			Email:      user.Email,
+			Phone:      user.Phone,
+			Address:    user.Address,
+			About:      user.About,
+			Registered: user.Registered,
+			Latitude:   user.Latitude,
+			Longitude:  user.Longitude,
+			Tags:       user.Tags,
+			Friends:    user.Friends,
+			Data:       user.Data,
 		}
 
 		result, err := userCollection.InsertOne(ctx, newUser)
@@ -91,7 +105,25 @@ func EditAUser() gin.HandlerFunc {
 			return
 		}
 
-		update := bson.M{"name": user.Name, "location": user.Location, "title": user.Title}
+		update := bson.M{
+			"password":   user.Password,
+			"isActive":   user.IsActive,
+			"balance":    user.Balance,
+			"age":        user.Age,
+			"name":       user.Name,
+			"gender":     user.Gender,
+			"Company":    user.Company,
+			"email":      user.Email,
+			"phone":      user.Phone,
+			"address":    user.Address,
+			"about":      user.About,
+			"registered": user.Registered,
+			"latitude":   user.Latitude,
+			"longitude":  user.Longitude,
+			"tags":       user.Tags,
+			"friends":    user.Friends,
+			"data":       user.Data,
+		}
 		result, err := userCollection.UpdateOne(ctx, bson.M{"id": objId}, bson.M{"$set": update})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
