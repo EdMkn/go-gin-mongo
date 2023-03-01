@@ -7,6 +7,7 @@ import (
 	"gin-mongo-api/models"
 	"gin-mongo-api/responses"
 	"net/http"
+	"os"
 	"reflect"
 	"time"
 
@@ -18,6 +19,32 @@ import (
 
 var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "users")
 var validate = validator.New()
+var directorypath = "resources/"
+
+func createFile(filename string, data string) {
+	f, err := os.OpenFile(directorypath+filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Printf("Unable to write file: %v", err)
+	} else {
+		_, err = f.Write([]byte(data))
+		if err != nil {
+			fmt.Printf("error %v", err)
+		}
+	}
+
+	f.Close()
+}
+func deleteFile(filename string) {
+	// delete file
+	var err0 = os.Chmod(directorypath+filename, 0770)
+	var err = os.Remove(directorypath + filename)
+	if err0 != nil {
+		fmt.Printf("Unable to change file permission: %v", err0)
+	}
+	if err != nil {
+		fmt.Printf("Unable to delete file: %v", err)
+	}
+}
 
 func CreateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -71,6 +98,7 @@ func CreateUser() gin.HandlerFunc {
 				continue
 			}
 
+			createFile(newUser.Id, newUser.Data)
 			c.JSON(http.StatusCreated, responses.UserResponse{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"data": result}})
 
 		}
@@ -223,6 +251,7 @@ func DeleteAUser() gin.HandlerFunc {
 			return
 		}
 
+		deleteFile(userId)
 		c.JSON(http.StatusOK,
 			responses.UserResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": "User successfully deleted!"}},
 		)
