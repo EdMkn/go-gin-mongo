@@ -1,6 +1,9 @@
 
 go get go.mongodb.org/mongo-driver
 go get -u github.com/gin-gonic/gin
+
+go run main.go
+
 TO DO
 - refaire la classe user model (ok)
 - validation des champs
