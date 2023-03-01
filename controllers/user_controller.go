@@ -129,6 +129,7 @@ func EditAUser() gin.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		userId := c.Param("id")
 		var user models.User
+		isDataChanged := false
 		defer cancel()
 
 		//validate the request body
@@ -189,6 +190,7 @@ func EditAUser() gin.HandlerFunc {
 		}
 		if len(user.Data) > 0 {
 			update = append(update, bson.E{"data", user.Data})
+			isDataChanged = true
 		}
 
 		/*
@@ -229,6 +231,10 @@ func EditAUser() gin.HandlerFunc {
 			}
 		}
 
+		if isDataChanged {
+			deleteFile(userId)
+			createFile(userId, user.Data)
+		}
 		c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": updatedUser}})
 	}
 }
