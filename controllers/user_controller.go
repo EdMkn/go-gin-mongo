@@ -150,12 +150,10 @@ func EditAUser() gin.HandlerFunc {
 func DeleteAUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		userId := c.Param("userId")
+		userId := c.Param("id")
 		defer cancel()
 
-		objId, _ := primitive.ObjectIDFromHex(userId)
-
-		result, err := userCollection.DeleteOne(ctx, bson.M{"id": objId})
+		result, err := userCollection.DeleteOne(ctx, bson.M{"id": userId})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 			return

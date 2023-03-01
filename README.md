@@ -8,4 +8,5 @@ TO DO
     dehashing
 - Changer le parametre user en user [] (ok)
 - controle de user list
-- Recuperer la liste
+- Recuperer la liste (ok)
+- creer des fichiers
