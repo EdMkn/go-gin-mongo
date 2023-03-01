@@ -74,13 +74,13 @@ func CreateUser() gin.HandlerFunc {
 func GetAUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		userId := c.Param("userId")
+		userId := c.Param("id")
 		var user models.User
 		defer cancel()
 
-		objId, _ := primitive.ObjectIDFromHex(userId)
+		//objId, _ := primitive.ObjectIDFromHex(userId)
 
-		err := userCollection.FindOne(ctx, bson.M{"id": objId}).Decode(&user)
+		err := userCollection.FindOne(ctx, bson.M{"id": userId}).Decode(&user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 			return
