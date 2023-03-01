@@ -23,6 +23,7 @@ func CreateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		var users []models.User
+		var altuser models.User
 		defer cancel()
 
 		//validate the request body
@@ -35,6 +36,11 @@ func CreateUser() gin.HandlerFunc {
 			//use the validator library to validate required fields
 			if validationErr := validate.Struct(user); validationErr != nil {
 				c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error_struct", Data: map[string]interface{}{"data": validationErr.Error()}})
+				continue
+			}
+
+			if uniqErr := userCollection.FindOne(ctx, bson.M{"id": user.Id}).Decode(&altuser); uniqErr == nil {
+				c.JSON(http.StatusConflict, responses.UserResponse{Status: http.StatusConflict, Message: "error_uniq", Data: map[string]interface{}{"data": "utilisateur deja present"}})
 				continue
 			}
 			hash := getHash([]byte(user.Password))
