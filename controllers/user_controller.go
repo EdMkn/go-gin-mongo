@@ -38,7 +38,7 @@ func CreateUser() gin.HandlerFunc {
 		hash := getHash([]byte(user.Password))
 		user.Password = hash
 		newUser := models.User{
-			Id:         primitive.NewObjectID(),
+			Id:         user.Id,
 			Password:   user.Password,
 			IsActive:   user.IsActive,
 			Balance:    user.Balance,
