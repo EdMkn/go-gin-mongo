@@ -21,50 +21,53 @@ var validate = validator.New()
 func CreateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		var user models.User
+		var users []models.User
 		defer cancel()
 
 		//validate the request body
-		if err := c.BindJSON(&user); err != nil {
+		if err := c.BindJSON(&users); err != nil {
 			c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
 
-		//use the validator library to validate required fields
-		if validationErr := validate.Struct(&user); validationErr != nil {
-			c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": validationErr.Error()}})
-			return
-		}
-		hash := getHash([]byte(user.Password))
-		user.Password = hash
-		newUser := models.User{
-			Id:         user.Id,
-			Password:   user.Password,
-			IsActive:   user.IsActive,
-			Balance:    user.Balance,
-			Age:        user.Age,
-			Name:       user.Name,
-			Gender:     user.Gender,
-			Company:    user.Company,
-			Email:      user.Email,
-			Phone:      user.Phone,
-			Address:    user.Address,
-			About:      user.About,
-			Registered: user.Registered,
-			Latitude:   user.Latitude,
-			Longitude:  user.Longitude,
-			Tags:       user.Tags,
-			Friends:    user.Friends,
-			Data:       user.Data,
+		for _, user := range users {
+			//use the validator library to validate required fields
+			if validationErr := validate.Struct(user); validationErr != nil {
+				c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error_struct", Data: map[string]interface{}{"data": validationErr.Error()}})
+				continue
+			}
+			hash := getHash([]byte(user.Password))
+			user.Password = hash
+			newUser := models.User{
+				Id:         user.Id,
+				Password:   user.Password,
+				IsActive:   user.IsActive,
+				Balance:    user.Balance,
+				Age:        user.Age,
+				Name:       user.Name,
+				Gender:     user.Gender,
+				Company:    user.Company,
+				Email:      user.Email,
+				Phone:      user.Phone,
+				Address:    user.Address,
+				About:      user.About,
+				Registered: user.Registered,
+				Latitude:   user.Latitude,
+				Longitude:  user.Longitude,
+				Tags:       user.Tags,
+				Friends:    user.Friends,
+				Data:       user.Data,
+			}
+			result, err := userCollection.InsertOne(ctx, newUser)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+				continue
+			}
+
+			c.JSON(http.StatusCreated, responses.UserResponse{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"data": result}})
+
 		}
 
-		result, err := userCollection.InsertOne(ctx, newUser)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
-			return
-		}
-
-		c.JSON(http.StatusCreated, responses.UserResponse{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"data": result}})
 	}
 }
 

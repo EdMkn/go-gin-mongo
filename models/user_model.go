@@ -7,11 +7,16 @@ const (
 	Female Gender = "female"
 )
 
+type Friend struct {
+	Id   int64  `json:"id" bson:"id,omitempty"`
+	Name string `json:"name" bson:"name,omitempty"`
+}
+
 type User struct {
 	Id         string   `json:"id,omitempty" bson:"id,omitempty"`
-	Password   string   `json:"password,omitempty" bson:"password,omitempty" validate:"required"`
-	IsActive   *bool    `json:"isActive,omitempty" bson:"isActive,omitempty" validate:"required"`
-	Balance    string   `json:"balance,omitempty" bson:"balance,omitempty" validate:"required"`
+	Password   string   `json:"password" bson:"password" validate:"required"`
+	IsActive   *bool    `json:"isActive" bson:"isActive,omitempty" validate:"required"`
+	Balance    string   `json:"balance" bson:"balance" validate:"required"`
 	Age        int      `json:"age,omitempty" bson:"age,omitempty" validate:"required"`
 	Name       string   `json:"name,omitempty" bson:"name,omitempty" validate:"required"`
 	Gender     Gender   `json:"gender,omitempty" bson:"gender,omitempty" validate:"required"`
@@ -24,6 +29,6 @@ type User struct {
 	Latitude   float32  `json:"latitude,omitempty" bson:"latitude,omitempty" `
 	Longitude  float32  `json:"longitude,omitempty" bson:"longitude,omitempty" `
 	Tags       []string `json:"tags,omitempty" bson:"tags,omitempty" `
-	Friends    []string `json:"friends" bson:"friends,omitempty" `
+	Friends    []Friend `json:"friends" bson:"friends,omitempty" `
 	Data       string   `json:"data,omitempty" bson:"data,omitempty" validate:"required"`
 }
