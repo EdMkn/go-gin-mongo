@@ -9,6 +9,6 @@ TO DO
 - Changer le parametre user en user [] (ok)
 - controle de user list (ok)
 - Recuperer la liste (ok)
-- creer des fichiers
+- creer des fichiers (ok)
 - update:
     if age not null (ok...?)
