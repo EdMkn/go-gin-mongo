@@ -10,7 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -30,9 +29,7 @@ func Login() gin.HandlerFunc {
 		var dbuser models.User
 		defer cancel()
 
-		objId, _ := primitive.ObjectIDFromHex(userId)
-
-		err := userCollection.FindOne(ctx, bson.M{"id": objId}).Decode(&dbuser)
+		err := userCollection.FindOne(ctx, bson.M{"id": userId}).Decode(&dbuser)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "identifiant introuvable", Data: map[string]interface{}{"data": err.Error()}})
 			return
@@ -40,8 +37,7 @@ func Login() gin.HandlerFunc {
 		dbPass := []byte(dbuser.Password)
 		passErr := bcrypt.CompareHashAndPassword(dbPass, []byte(userPass))
 		if passErr != nil {
-			log.Println(passErr)
-			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "Mot de passe errone", Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "Mot de passe errone", Data: map[string]interface{}{"data": passErr.Error()}})
 			return
 		}
 
