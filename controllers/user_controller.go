@@ -22,6 +22,9 @@ var validate = validator.New()
 var directorypath = "resources/"
 
 func createFile(filename string, data string) {
+	if err := os.Mkdir(directorypath, os.ModePerm); err != nil {
+		fmt.Printf("error %v", err)
+	}
 	f, err := os.OpenFile(directorypath+filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Printf("Unable to write file: %v", err)
