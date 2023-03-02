@@ -59,7 +59,6 @@ func CreateUser() gin.HandlerFunc {
 		//validate the request body
 		if err := c.BindJSON(&users); err != nil {
 			c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
-			return
 		}
 
 		for _, user := range users {
